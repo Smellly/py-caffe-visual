@@ -44,15 +44,20 @@ def forward(deploy, caffe_model, filelist):
         net.blobs['data'].data[...] = transformer.preprocess('data', im)
 
         # 执行测试 
-        out = net.forward() 
+        # out = net.forward() 
+        out, diffs = net.forward_backward_all()
            
         # 取出最后一层（prob）属于某个类别的概率值，并打印,'prob'为最后一层的名称
         blobd = net.blobs['data'].data[0].flatten()
         prob0, prob1 = net.blobs['prob'].data[0].flatten()
-        fc = net.blobs['fc62'].data[0].flatten()
+        pool5 = net.blobs['pool5'].data[0].flatten()
+        pool5_diff = out_back#.blobs['pool5'].diff
+        
         # 'prob': array([[  5.39986126e-04,   9.99460042e-01]], dtype=float32)
         print('blobd : ', blobd)
-        print('fc2 : ', fc)
+        print('pool5 : ', pool5)
+        print('pool5_diff : ', pool5_diff['data'])
+        print('pool5_diff shape: ', pool5_diff['data'].shape)
         # print len(blobd)
         print('prob : ', prob0, prob1)
         preds.append(' '.join(str(e) for e in blobd) + '\n')
